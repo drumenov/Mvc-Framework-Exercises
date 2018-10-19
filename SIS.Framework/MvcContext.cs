@@ -21,5 +21,7 @@
         public string ResourcesFolder { get; set; } = "../../../Resources";
 
         public string[] ResourceExtensions { get; } = { ".css", ".js" };
+
+	public string PaternToReplace {get;} = "@RenderBody()";
     }
 }

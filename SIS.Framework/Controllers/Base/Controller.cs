@@ -12,8 +12,7 @@ namespace SIS.Framework.Controllers.Base
     {
         protected Controller() {
             this.ViewModel = new ViewModel();
-        }
-
+        }	
 
         public IHttpRequest Request { get; set; }
 

@@ -18,6 +18,11 @@ namespace SIS.Framework.Routers
 {
     public class ControllerRouter : IHttpHandler
     {
+	private readonly IDependencyContainer dependencyContainer;
+
+	public ControllerRouter(IDependencyContainer dependencyContainer){
+		this.dependencyContainer = dependencyContainer;
+	}
 
         public IHttpResponse Handle(IHttpRequest request) {
             string controllerName = String.Empty;
@@ -177,7 +182,7 @@ namespace SIS.Framework.Routers
 
             string fullyQualifiedControllerName = $"{MvcContext.Get.AssemblyName}.{MvcContext.Get.ControllersFolder}.{controllerName}{MvcContext.Get.ControllersSuffix}, {MvcContext.Get.AssemblyName}";
             Type controllerType = Type.GetType(fullyQualifiedControllerName);
-            Controller controller = Activator.CreateInstance(controllerType, null) as Controller;
+            Controller controller = this.dependencyContainer.CreateInstance(controllerType) as Controller;
             return controller;
         }
     }

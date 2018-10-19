@@ -1,0 +1,12 @@
+﻿public class UsersService : IUsersService
+{
+	private readonly IRunesContext dbContext;
+
+	public UsersService(IRunesContext dbContext){
+		this.dbContext = dbContext;
+	}
+
+	public bool ExistsByUsernameAndPassword(string username, string password){
+		return this.dbContext.Any(u => u.Username == username && u.Password == password.Hash());
+	}
+}

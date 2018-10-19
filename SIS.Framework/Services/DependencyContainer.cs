@@ -26,7 +26,7 @@ namespace SIS.Framework.Services
                 throw new InvalidOperationException($"Type {instanceType.FullName} cannot be instantiated.");
             }
 
-            ConstructorInfo constructor = instanceType.GetConstructors().OrderBy(x => x.GetParameters().Length).First();
+            ConstructorInfo constructor = instanceType.GetConstructors().OrderByDescending(x => x.GetParameters().Length).First();
             ParameterInfo[] constructorParameters = constructor.GetParameters();
             object[] parametersToBePassedToConstructor = new object[constructorParameters.Length];
 
