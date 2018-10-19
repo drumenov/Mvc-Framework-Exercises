@@ -1,6 +1,7 @@
 ﻿using SIS.Framework.ActionResults.Contracts;
 using SIS.Framework.Attributes.Base;
 using SIS.Framework.Controllers.Base;
+using SIS.Framework.Services.Contracts;
 using SIS.HTTP.Enums;
 using SIS.HTTP.Extensions;
 using SIS.HTTP.Requests;
@@ -16,13 +17,13 @@ using System.Text;
 
 namespace SIS.Framework.Routers
 {
-    public class ControllerRouter : IHttpHandler
+    public class ControllerRouter : IControllerRouter
     {
-	private readonly IDependencyContainer dependencyContainer;
+        private IDependencyContainer dependencyContainer;
 
-	public ControllerRouter(IDependencyContainer dependencyContainer){
-		this.dependencyContainer = dependencyContainer;
-	}
+        public ControllerRouter(IDependencyContainer dependencyContainer) {
+            this.dependencyContainer = dependencyContainer;
+        }
 
         public IHttpResponse Handle(IHttpRequest request) {
             string controllerName = String.Empty;
@@ -34,14 +35,14 @@ namespace SIS.Framework.Routers
             }
             else {
                 string[] splittedRequestPath = request.Path.Split("/", StringSplitOptions.RemoveEmptyEntries);
-                if(splittedRequestPath.Length == 2) {
+                if (splittedRequestPath.Length == 2) {
                     controllerName = splittedRequestPath[0].Capitalize();
                     actionName = splittedRequestPath[1].Capitalize();
                 }
             }
             Controller controller = this.GetController(controllerName, request);
 
-            if(controller == null) {
+            if (controller == null) {
                 return new HttpResponse(HttpResponseStatusCode.NotFound);
             }
 
@@ -60,7 +61,7 @@ namespace SIS.Framework.Routers
         private object[] MapActionParameters(MethodInfo action, IHttpRequest request, Controller controller) {
             ParameterInfo[] actionParametersInfo = action.GetParameters();
             object[] mappedActionParameters = new object[actionParametersInfo.Length];
-            for (int i = 0; i < mappedActionParameters.Length; i++){
+            for (int i = 0; i < mappedActionParameters.Length; i++) {
                 ParameterInfo currentParameter = actionParametersInfo[i];
                 if (currentParameter.ParameterType.IsPrimitive || currentParameter.ParameterType == typeof(String)) {
                     mappedActionParameters[i] = this.ProcessPrimitiveParameter(currentParameter, request);
@@ -145,17 +146,17 @@ namespace SIS.Framework.Routers
         private MethodInfo GetAction(string requestMethod, Controller controller, string actionName) {
             MethodInfo action = null;
             IEnumerable<MethodInfo> actions = this.GetSuitableMethods(controller, actionName);
-            foreach(MethodInfo methodInfo in actions) {
+            foreach (MethodInfo methodInfo in actions) {
                 IEnumerable<HttpMethodAttribute> attributes = methodInfo
                     .GetCustomAttributes()
                     .Where(attr => attr is HttpMethodAttribute)
                     .Cast<HttpMethodAttribute>();
 
-                if(!attributes.Any() && requestMethod.ToUpper() == "GET") {
+                if (!attributes.Any() && requestMethod.ToUpper() == "GET") {
                     return methodInfo;
                 }
 
-                foreach(HttpMethodAttribute attr in attributes) {
+                foreach (HttpMethodAttribute attr in attributes) {
                     if (attr.IsValid(requestMethod)) {
                         return methodInfo;
                     }

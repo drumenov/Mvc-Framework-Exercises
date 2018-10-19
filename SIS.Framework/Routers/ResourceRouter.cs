@@ -11,7 +11,7 @@ using System.Text;
 
 namespace SIS.Framework.Routers
 {
-    public class ResourceRouter : IHttpHandler
+    public class ResourceRouter : IResourceRouter
     {
         public IHttpResponse Handle(IHttpRequest request) {
             string resourceExtension = ResourceUtilities.GetResourceExtension(request.Path);

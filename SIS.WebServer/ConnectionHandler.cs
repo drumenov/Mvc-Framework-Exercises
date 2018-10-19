@@ -21,9 +21,9 @@ namespace SIS.WebServer
     {
         private readonly Socket client;
 
-        private readonly IHttpHandler router;
+        private readonly IRouter router;
 
-        public ConnectionHandler(Socket client, IHttpHandler router) {
+        public ConnectionHandler(Socket client, IRouter router) {
             this.client = client;
             this.router = router;
         }

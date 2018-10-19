@@ -1,4 +1,7 @@
-﻿public interface IUSersService
+﻿namespace SIS.Demo.Services.Contracts
 {
-	bool ExistsByUsernameAndPassword(string username, string password);
+    public interface IUsersService
+    {
+        bool ExistsByUsernameAndPassword(string username, string password);
+    }
 }
