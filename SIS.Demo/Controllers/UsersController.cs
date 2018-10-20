@@ -3,7 +3,7 @@ using SIS.Framework.Attributes;
 using SIS.Framework.Controllers.Base;
 using SIS.Demo.Services.Contracts;
 
-namespace IRunesWebApp.Controllers
+namespace SIS.Demo.Controllers
 {
     public class UsersController : Controller {
         private IUsersService usersService;
@@ -19,7 +19,7 @@ namespace IRunesWebApp.Controllers
             if (!ModelState.IsValid.HasValue || !ModelState.IsValid.Value) {
                 this.RedirectToAction("/users/login");
             }
-            return null;
+            return this.RedirectToAction("/");
         }
     }    
 }

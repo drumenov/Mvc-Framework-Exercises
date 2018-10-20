@@ -1,4 +1,5 @@
-﻿using SIS.Framework.ActionResults.Contracts;
+﻿using SIS.Framework.Services;
+using SIS.Framework.ActionResults.Contracts;
 using SIS.Framework.Attributes.Base;
 using SIS.Framework.Controllers.Base;
 using SIS.Framework.Services.Contracts;
@@ -12,8 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
 using System.Reflection;
-using System.Text;
 
 namespace SIS.Framework.Routers
 {
@@ -102,10 +103,15 @@ namespace SIS.Framework.Routers
 
         private object GetParameterFromRequestData(string parameterName, IHttpRequest request) {
             object parameterValue = null;
-            if (request.QueryData.ContainsKey(parameterName))
-                parameterValue = request.QueryData[parameterName];
-            if (request.FormData.ContainsKey(parameterName))
-                parameterValue = request.FormData[parameterName];
+            if (request.QueryData.ContainsKey(parameterName.ToLower()))
+                parameterValue = request.QueryData[parameterName.ToLower()];
+            if (request.FormData.ContainsKey(parameterName.ToLower()))
+                if (parameterName.ToLower() == "password") {
+                    parameterValue = request.FormData[parameterName.ToLower()].ToString().Hash();
+                }
+                else {
+                    parameterValue = request.FormData[parameterName.ToLower()];
+                }
             return parameterValue;
         }
 
@@ -117,8 +123,9 @@ namespace SIS.Framework.Routers
 
             foreach (PropertyInfo property in bindingModelProperties) {
                 try {
-                    object value = this.GetParameterFromRequestData(property.Name, request);
-                    property.SetValue(bindingModelInstance, Convert.ChangeType(value, property.PropertyType));
+                    object formData = this.GetParameterFromRequestData(property.Name, request);
+                    object decodenData = WebUtility.UrlDecode(formData.ToString()) as object;
+                    property.SetValue(bindingModelInstance, Convert.ChangeType(decodenData, property.PropertyType));
                 }
                 catch {
                     Console.WriteLine($"The {property.Name} field could not be mapped.");
@@ -147,7 +154,7 @@ namespace SIS.Framework.Routers
             MethodInfo action = null;
             IEnumerable<MethodInfo> actions = this.GetSuitableMethods(controller, actionName);
             foreach (MethodInfo methodInfo in actions) {
-                IEnumerable<HttpMethodAttribute> attributes = methodInfo
+                IEnumerable<HttpMethodAttribute> attributes = methodInfo //Custom attributes are missing.Figure out how to find them.
                     .GetCustomAttributes()
                     .Where(attr => attr is HttpMethodAttribute)
                     .Cast<HttpMethodAttribute>();
@@ -170,10 +177,13 @@ namespace SIS.Framework.Routers
                 return new MethodInfo[0];
             }
 
-            return controller
+            MethodInfo[] actions = controller
                 .GetType()
                 .GetMethods()
-                .Where(mi => mi.Name.ToLower() == actionName.ToLower());
+                .Where(mi => mi.Name.ToLower() == actionName.ToLower())
+                .ToArray();
+
+            return actions;
         }
 
         private Controller GetController(string controllerName, IHttpRequest request) {

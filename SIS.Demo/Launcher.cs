@@ -1,4 +1,8 @@
-﻿using SIS.Framework;
+﻿using IRunesWebApp.Data;
+using SIS.Demo.Services;
+using SIS.Demo.Services.Contracts;
+using SIS.Framework;
+using SIS.Framework.Controllers.Base;
 using SIS.Framework.Routers;
 using SIS.Framework.Services;
 using SIS.Framework.Services.Contracts;
@@ -32,6 +36,9 @@ namespace SIS.Demo
             dependencyContainer.RegisterDependency<IControllerRouter, ControllerRouter>();
             dependencyContainer.RegisterDependency<IResourceRouter, ResourceRouter>();
             dependencyContainer.RegisterDependency<IDependencyContainer, DependencyContainer>();
+            dependencyContainer.RegisterDependency<IUsersService, UsersService>();
+            dependencyContainer.RegisterDependency<IRunesDbContext, IRunesDbContext>();
+            //dependencyContainer.RegisterDependency<Controller, Controller>();
 
             return dependencyContainer;
         }

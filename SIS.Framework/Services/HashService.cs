@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace IRunesWebApp.Services
+namespace SIS.Framework.Services
 {
     public static class HashService
     {
