@@ -1,7 +1,14 @@
-﻿using SIS.Framework;
+﻿using SIS.Demo.Data;
+using SIS.Demo.Services;
+using SIS.Demo.Services.Contracts;
+using SIS.Framework;
+using SIS.Framework.Controllers.Base;
 using SIS.Framework.Routers;
+using SIS.Framework.Services;
+using SIS.Framework.Services.Contracts;
 using SIS.WebServer;
 using SIS.WebServer.Api.Contracts;
+using System;
 using System.Reflection;
 
 namespace SIS.Demo
@@ -9,7 +16,10 @@ namespace SIS.Demo
     class Launcher
     {
         static void Main(string[] args) {
-            IHttpHandler router = new Router();
+            IDependencyContainer dependencyContainer = ConfigureDependencyContainer();
+            IControllerRouter controllerRouter = new ControllerRouter(dependencyContainer);
+            IResourceRouter resourceRouter = dependencyContainer.CreateInstance<IResourceRouter>();
+            IRouter router = new Router(controllerRouter, resourceRouter);
 
             MvcContext.Get.AssemblyName = Assembly
                 .GetExecutingAssembly()
@@ -18,6 +28,19 @@ namespace SIS.Demo
 
             Server server = new Server(8000, router);
             server.Run();
+        }
+
+        private static IDependencyContainer ConfigureDependencyContainer() {
+            IDependencyContainer dependencyContainer = new DependencyContainer();
+            dependencyContainer.RegisterDependency<IRouter, Router>();
+            dependencyContainer.RegisterDependency<IControllerRouter, ControllerRouter>();
+            dependencyContainer.RegisterDependency<IResourceRouter, ResourceRouter>();
+            dependencyContainer.RegisterDependency<IDependencyContainer, DependencyContainer>();
+            dependencyContainer.RegisterDependency<IUsersService, UsersService>();
+            dependencyContainer.RegisterDependency<IRunesDbContext, IRunesDbContext>();
+            //dependencyContainer.RegisterDependency<Controller, Controller>();
+
+            return dependencyContainer;
         }
     }
 }

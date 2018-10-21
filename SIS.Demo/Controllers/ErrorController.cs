@@ -3,10 +3,10 @@ using SIS.Framework.Controllers.Base;
 
 namespace SIS.Demo.Controllers
 {
-    public class HomeController : Controller
+    public class ErrorController : Controller
     {
         public IActionResult Index() {
-            return this.View();
+            return View();
         }
     }
 }

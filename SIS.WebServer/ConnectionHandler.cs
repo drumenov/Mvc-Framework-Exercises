@@ -1,16 +1,9 @@
-﻿using SIS.HTTP.Common;
-using SIS.HTTP.Cookies;
-using SIS.HTTP.Enums;
+﻿using SIS.HTTP.Cookies;
 using SIS.HTTP.Requests;
 using SIS.HTTP.Responses;
 using SIS.HTTP.Sessions;
 using SIS.WebServer.Api.Contracts;
-using SIS.WebServer.Results;
-using SIS.WebServer.Routing;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,9 +14,9 @@ namespace SIS.WebServer
     {
         private readonly Socket client;
 
-        private readonly IHttpHandler router;
+        private readonly IRouter router;
 
-        public ConnectionHandler(Socket client, IHttpHandler router) {
+        public ConnectionHandler(Socket client, IRouter router) {
             this.client = client;
             this.router = router;
         }
@@ -86,7 +79,7 @@ namespace SIS.WebServer
 
 
             if (httpRequest != null) {
-
+                //string sessionId = this.SetRequestSession(httpRequest);
                 IHttpResponse httpResponse = this.router.Handle(httpRequest);
                 //this.SetResponseSession(httpResponse, sessionId);
                 await this.PrepareResponse(httpResponse);

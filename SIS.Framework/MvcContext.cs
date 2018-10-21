@@ -21,5 +21,9 @@
         public string ResourcesFolder { get; set; } = "../../../Resources";
 
         public string[] ResourceExtensions { get; } = { ".css", ".js" };
+
+        public string PatternToReplace { get; } = "@RenderBody()";
+
+        public string LayoutPath { get; } = "../../../Views/_Layout.html";
     }
 }

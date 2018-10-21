@@ -1,6 +1,8 @@
-﻿using SIS.Framework.ActionResults.Contracts;
+﻿using SIS.Framework.Services;
+using SIS.Framework.ActionResults.Contracts;
 using SIS.Framework.Attributes.Base;
 using SIS.Framework.Controllers.Base;
+using SIS.Framework.Services.Contracts;
 using SIS.HTTP.Enums;
 using SIS.HTTP.Extensions;
 using SIS.HTTP.Requests;
@@ -11,13 +13,22 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
 using System.Reflection;
-using System.Text;
 
 namespace SIS.Framework.Routers
 {
-    public class ControllerRouter : IHttpHandler
+    public class ControllerRouter : IControllerRouter
     {
+        private const string DefaultErrorControllerName = "Error";
+
+        private const string DefaultErrorActionName = "Index";
+
+        private IDependencyContainer dependencyContainer;
+
+        public ControllerRouter(IDependencyContainer dependencyContainer) {
+            this.dependencyContainer = dependencyContainer;
+        }
 
         public IHttpResponse Handle(IHttpRequest request) {
             string controllerName = String.Empty;
@@ -29,33 +40,32 @@ namespace SIS.Framework.Routers
             }
             else {
                 string[] splittedRequestPath = request.Path.Split("/", StringSplitOptions.RemoveEmptyEntries);
-                if(splittedRequestPath.Length == 2) {
+                if (splittedRequestPath.Length == 2) {
                     controllerName = splittedRequestPath[0].Capitalize();
                     actionName = splittedRequestPath[1].Capitalize();
                 }
             }
-            Controller controller = this.GetController(controllerName, request);
-
-            if(controller == null) {
-                return new HttpResponse(HttpResponseStatusCode.NotFound);
+            Controller controller = this.GetController(controllerName);
+            MethodInfo action = null;
+            if (controller == null) {
+                controller = this.GetController(DefaultErrorControllerName);
+            } else {
+                action = this.GetAction(requestMethod, controller, actionName);
             }
 
-            MethodInfo action = this.GetAction(requestMethod, controller, actionName);
-
-            if (controller == null || action == null) {
-                throw new NullReferenceException();
+            if (action == null) {
+                controller = this.GetController(DefaultErrorControllerName);
+                action = this.GetAction(requestMethod, controller, DefaultErrorActionName);
             }
-
             object[] actionParameters = this.MapActionParameters(action, request, controller);
             IActionResult actionResult = this.InvokeAction(controller, action, actionParameters);
-
             return this.PrepareResponse(actionResult);
         }
 
         private object[] MapActionParameters(MethodInfo action, IHttpRequest request, Controller controller) {
             ParameterInfo[] actionParametersInfo = action.GetParameters();
             object[] mappedActionParameters = new object[actionParametersInfo.Length];
-            for (int i = 0; i < mappedActionParameters.Length; i++){
+            for (int i = 0; i < mappedActionParameters.Length; i++) {
                 ParameterInfo currentParameter = actionParametersInfo[i];
                 if (currentParameter.ParameterType.IsPrimitive || currentParameter.ParameterType == typeof(String)) {
                     mappedActionParameters[i] = this.ProcessPrimitiveParameter(currentParameter, request);
@@ -96,10 +106,15 @@ namespace SIS.Framework.Routers
 
         private object GetParameterFromRequestData(string parameterName, IHttpRequest request) {
             object parameterValue = null;
-            if (request.QueryData.ContainsKey(parameterName))
-                parameterValue = request.QueryData[parameterName];
-            if (request.FormData.ContainsKey(parameterName))
-                parameterValue = request.FormData[parameterName];
+            if (request.QueryData.ContainsKey(parameterName.ToLower()))
+                parameterValue = request.QueryData[parameterName.ToLower()];
+            if (request.FormData.ContainsKey(parameterName.ToLower()))
+                if (parameterName.ToLower() == "password") {
+                    parameterValue = request.FormData[parameterName.ToLower()].ToString().Hash();
+                }
+                else {
+                    parameterValue = request.FormData[parameterName.ToLower()];
+                }
             return parameterValue;
         }
 
@@ -111,8 +126,9 @@ namespace SIS.Framework.Routers
 
             foreach (PropertyInfo property in bindingModelProperties) {
                 try {
-                    object value = this.GetParameterFromRequestData(property.Name, request);
-                    property.SetValue(bindingModelInstance, Convert.ChangeType(value, property.PropertyType));
+                    object formData = this.GetParameterFromRequestData(property.Name, request);
+                    object decodenData = WebUtility.UrlDecode(formData.ToString()) as object;
+                    property.SetValue(bindingModelInstance, Convert.ChangeType(decodenData, property.PropertyType));
                 }
                 catch {
                     Console.WriteLine($"The {property.Name} field could not be mapped.");
@@ -140,17 +156,17 @@ namespace SIS.Framework.Routers
         private MethodInfo GetAction(string requestMethod, Controller controller, string actionName) {
             MethodInfo action = null;
             IEnumerable<MethodInfo> actions = this.GetSuitableMethods(controller, actionName);
-            foreach(MethodInfo methodInfo in actions) {
+            foreach (MethodInfo methodInfo in actions) {
                 IEnumerable<HttpMethodAttribute> attributes = methodInfo
                     .GetCustomAttributes()
                     .Where(attr => attr is HttpMethodAttribute)
                     .Cast<HttpMethodAttribute>();
 
-                if(!attributes.Any() && requestMethod.ToUpper() == "GET") {
+                if (!attributes.Any() && requestMethod.ToUpper() == "GET") {
                     return methodInfo;
                 }
 
-                foreach(HttpMethodAttribute attr in attributes) {
+                foreach (HttpMethodAttribute attr in attributes) {
                     if (attr.IsValid(requestMethod)) {
                         return methodInfo;
                     }
@@ -164,20 +180,23 @@ namespace SIS.Framework.Routers
                 return new MethodInfo[0];
             }
 
-            return controller
+            MethodInfo[] actions = controller
                 .GetType()
                 .GetMethods()
-                .Where(mi => mi.Name.ToLower() == actionName.ToLower());
+                .Where(mi => mi.Name.ToLower() == actionName.ToLower())
+                .ToArray();
+
+            return actions;
         }
 
-        private Controller GetController(string controllerName, IHttpRequest request) {
+        private Controller GetController(string controllerName) {
             if (String.IsNullOrWhiteSpace(controllerName)) {
                 return null;
             }
 
             string fullyQualifiedControllerName = $"{MvcContext.Get.AssemblyName}.{MvcContext.Get.ControllersFolder}.{controllerName}{MvcContext.Get.ControllersSuffix}, {MvcContext.Get.AssemblyName}";
             Type controllerType = Type.GetType(fullyQualifiedControllerName);
-            Controller controller = Activator.CreateInstance(controllerType, null) as Controller;
+            Controller controller = this.dependencyContainer.CreateInstance(controllerType) as Controller;
             return controller;
         }
     }

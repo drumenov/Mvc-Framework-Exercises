@@ -3,7 +3,7 @@ using SIS.HTTP.Responses;
 
 namespace SIS.WebServer.Api.Contracts
 {
-    public interface IHttpHandler
+    public interface IControllerRouter
     {
         IHttpResponse Handle(IHttpRequest request);
     }

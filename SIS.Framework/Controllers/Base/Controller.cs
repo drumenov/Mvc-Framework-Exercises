@@ -12,8 +12,7 @@ namespace SIS.Framework.Controllers.Base
     {
         protected Controller() {
             this.ViewModel = new ViewModel();
-        }
-
+        }	
 
         public IHttpRequest Request { get; set; }
 
@@ -32,5 +31,6 @@ namespace SIS.Framework.Controllers.Base
         }
 
         protected IRedirectable RedirectToAction(string redirectUrl) => new RedirectResult(redirectUrl);
+        
     }
 }

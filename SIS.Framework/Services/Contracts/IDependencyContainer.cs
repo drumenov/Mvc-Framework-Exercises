@@ -6,7 +6,7 @@ namespace SIS.Framework.Services.Contracts
 {
     public interface IDependencyContainer
     {
-        void RegisterDependency<TSource, TDestinarion>();
+        void RegisterDependency<TSource, TDestination>();
 
         T CreateInstance<T>();
 

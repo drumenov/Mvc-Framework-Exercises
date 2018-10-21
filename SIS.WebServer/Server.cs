@@ -1,5 +1,4 @@
 ﻿using SIS.WebServer.Api.Contracts;
-using SIS.WebServer.Routing;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -15,13 +14,11 @@ namespace SIS.WebServer
 
         private readonly TcpListener listener;
 
-        private readonly ServerRoutingTable serverRoutingTable;
-
-        private readonly IHttpHandler router;
+        private readonly IRouter router;
 
         private bool isRunning;
 
-        public Server(int port, IHttpHandler router) {
+        public Server(int port, IRouter router) {
             this.port = port;
             this.router = router;
             this.listener = new TcpListener(IPAddress.Parse(LocalHostIpAddress), this.port);
