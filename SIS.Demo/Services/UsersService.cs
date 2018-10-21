@@ -16,7 +16,7 @@ namespace SIS.Demo.Services
         }
 
         public bool ExistsByUsernameAndPassword(string username, string password) {
-            return this.dbContext.Users.Any(u => u.Username == username && u.HashedPassword == password.Hash());
+            return this.dbContext.Users.Any(u => u.Username == username && u.HashedPassword == password);
         }
 
         public bool TryRegisterUser(RegisterViewModel model) {

@@ -57,7 +57,6 @@ namespace SIS.Framework.Routers
                 controller = this.GetController(DefaultErrorControllerName);
                 action = this.GetAction(requestMethod, controller, DefaultErrorActionName);
             }
-
             object[] actionParameters = this.MapActionParameters(action, request, controller);
             IActionResult actionResult = this.InvokeAction(controller, action, actionParameters);
             return this.PrepareResponse(actionResult);

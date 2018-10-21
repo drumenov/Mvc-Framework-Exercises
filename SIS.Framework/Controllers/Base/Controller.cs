@@ -31,5 +31,6 @@ namespace SIS.Framework.Controllers.Base
         }
 
         protected IRedirectable RedirectToAction(string redirectUrl) => new RedirectResult(redirectUrl);
+        
     }
 }

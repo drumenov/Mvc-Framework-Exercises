@@ -6,9 +6,8 @@ using SIS.Demo.ViewModels;
 
 namespace SIS.Demo.Controllers
 {
-    public class UsersController : Controller {
-        
-
+    public class UsersController : Controller
+    {
         private IUsersService usersService;
 
         public UsersController(IUsersService usersService) {
@@ -22,30 +21,34 @@ namespace SIS.Demo.Controllers
 
             IActionResult result = this.RedirectToAction("/users/login");
 
-            if (!ModelState.IsValid.HasValue || !ModelState.IsValid.Value) {
-                result = this.RedirectToAction("/users/login");
-            }
-            if(usersService.ExistsByUsernameAndPassword(model.Username, model.Password)) {
-                result = this.RedirectToAction("/");
+            if (this.ModelState.IsValid.HasValue && ModelState.IsValid.Value && usersService.ExistsByUsernameAndPassword(model.Email, model.Password)) {
+                this.FillViewModel(nameof(model.Email), model.Email);
+                result = this.View("IndexLoggedIn");
             }
             return result;
         }
 
-        public IActionResult Register() {
-            return View();
-        }
+        public IActionResult Register() => this.View();
 
         [HttpPost]
         public IActionResult Register(RegisterViewModel model) {
             IActionResult result = this.RedirectToAction("/users/register/");
-            if(this.ModelState.IsValid.HasValue && this.ModelState.IsValid.Value) {
+            if (this.ModelState.IsValid.HasValue && this.ModelState.IsValid.Value) {
                 if (this.usersService.TryRegisterUser(model)) {
-                    this.ViewModel[nameof(model.Email).ToLower()] = model.Email;
+                    this.FillViewModel(nameof(model.Email), model.Email);
                     result = this.View("IndexLoggedIn");
                 }
             }
             return result;
         }
-    }    
+
+        public IActionResult Logout() {
+            return this.RedirectToAction("/");
+        }
+
+        private void FillViewModel(string key, object value) {
+            this.ViewModel[key.ToLower()] = value;
+        }
+    }
 }
 
