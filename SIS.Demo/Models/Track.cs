@@ -1,10 +1,9 @@
-﻿using System;
+﻿using SIS.Demo.Models.Base;
 using System.Collections.Generic;
-using System.Text;
 
-namespace IRunesWebApp.Models
+namespace SIS.Demo.Models
 {
-    public class Track :BaseEntity<string>
+    public class Track : BaseEntity<string>
     {
         public Track() {
             this.Albums = new HashSet<TrackAlbum>();

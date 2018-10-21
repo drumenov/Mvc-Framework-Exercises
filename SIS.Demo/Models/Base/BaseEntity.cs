@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace IRunesWebApp.Models
+namespace SIS.Demo.Models.Base
 {
     public abstract class BaseEntity<TKeyIdentifier>
     {

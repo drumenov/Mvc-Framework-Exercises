@@ -30,7 +30,7 @@ namespace SIS.Framework.Views
         public string Render() {
             string contentHtml = this.ReadFile(this.fullyQualifiedTemplateName);
             string layoutHtml = this.ReadFile(this.fullyQualifiedLayoutName);
-            string fullHtml = this.GenerateFullHtml(contentHtml, layoutHtml);
+            string fullHtml = this.GenerateFullHtml(contentHtml, layoutHtml, MvcContext.Get.PatternToReplace);
             string rederedHtml = this.RenderHtml(fullHtml);
             return rederedHtml;
         }
@@ -40,13 +40,13 @@ namespace SIS.Framework.Views
 
             if (this.viewData.Any()) {
                 foreach (KeyValuePair<string, object> parameter in this.viewData) {
-                    renderedHtml = renderedHtml.Replace($"{{{{{{{parameter.Key}}}}}}}", parameter.Value.ToString());
+                    renderedHtml = renderedHtml.Replace($"{{{{{parameter.Key}}}}}", parameter.Value.ToString());
                 }
             }
             return renderedHtml;
         }
 
-        private string GenerateFullHtml(string content, string layout) {
+        private string GenerateFullHtml(string content, string layout, string pattern) {
             return layout.Replace(MvcContext.Get.PatternToReplace, content);
         }
     }

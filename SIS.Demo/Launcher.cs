@@ -1,4 +1,4 @@
-﻿using IRunesWebApp.Data;
+﻿using SIS.Demo.Data;
 using SIS.Demo.Services;
 using SIS.Demo.Services.Contracts;
 using SIS.Framework;

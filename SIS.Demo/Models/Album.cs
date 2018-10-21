@@ -1,10 +1,9 @@
-﻿using System;
+﻿using SIS.Demo.Models.Base;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Text;
 
-namespace IRunesWebApp.Models
+namespace SIS.Demo.Models
 {
     public class Album : BaseEntity<string>
     {

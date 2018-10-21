@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
-    <Folder Include="Models\Base\" />
     <Folder Include="Resources\css\" />
   </ItemGroup>
 

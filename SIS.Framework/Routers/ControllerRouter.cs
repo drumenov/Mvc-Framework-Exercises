@@ -60,7 +60,6 @@ namespace SIS.Framework.Routers
 
             object[] actionParameters = this.MapActionParameters(action, request, controller);
             IActionResult actionResult = this.InvokeAction(controller, action, actionParameters);
-
             return this.PrepareResponse(actionResult);
         }
 

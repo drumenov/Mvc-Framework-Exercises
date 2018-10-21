@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace IRunesWebApp.Models
+﻿namespace SIS.Demo.Models
 {
     public class UserAlbum
     {

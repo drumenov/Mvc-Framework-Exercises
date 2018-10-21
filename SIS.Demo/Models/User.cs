@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using SIS.Demo.Models.Base;
+using System.Collections.Generic;
 
-namespace IRunesWebApp.Models
+namespace SIS.Demo.Models
 {
     public class User : BaseEntity<string>
     {

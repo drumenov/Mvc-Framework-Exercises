@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SIS.Demo.Models.Base;
 
-namespace IRunesWebApp.Models
+namespace SIS.Demo.Models
 {
     public class TrackAlbum : BaseEntity<int>
     {
