@@ -20,6 +20,10 @@ namespace SIS.Framework.Routers
 {
     public class ControllerRouter : IControllerRouter
     {
+        private const string DefaultErrorControllerName = "Error";
+
+        private const string DefaultErrorActionName = "Index";
+
         private IDependencyContainer dependencyContainer;
 
         public ControllerRouter(IDependencyContainer dependencyContainer) {
@@ -41,16 +45,17 @@ namespace SIS.Framework.Routers
                     actionName = splittedRequestPath[1].Capitalize();
                 }
             }
-            Controller controller = this.GetController(controllerName, request);
-
+            Controller controller = this.GetController(controllerName);
+            MethodInfo action = null;
             if (controller == null) {
-                return new HttpResponse(HttpResponseStatusCode.NotFound);
+                controller = this.GetController(DefaultErrorControllerName);
+            } else {
+                action = this.GetAction(requestMethod, controller, actionName);
             }
 
-            MethodInfo action = this.GetAction(requestMethod, controller, actionName);
-
-            if (controller == null || action == null) {
-                throw new NullReferenceException();
+            if (action == null) {
+                controller = this.GetController(DefaultErrorControllerName);
+                action = this.GetAction(requestMethod, controller, DefaultErrorActionName);
             }
 
             object[] actionParameters = this.MapActionParameters(action, request, controller);
@@ -154,7 +159,7 @@ namespace SIS.Framework.Routers
             MethodInfo action = null;
             IEnumerable<MethodInfo> actions = this.GetSuitableMethods(controller, actionName);
             foreach (MethodInfo methodInfo in actions) {
-                IEnumerable<HttpMethodAttribute> attributes = methodInfo //Custom attributes are missing.Figure out how to find them.
+                IEnumerable<HttpMethodAttribute> attributes = methodInfo
                     .GetCustomAttributes()
                     .Where(attr => attr is HttpMethodAttribute)
                     .Cast<HttpMethodAttribute>();
@@ -186,7 +191,7 @@ namespace SIS.Framework.Routers
             return actions;
         }
 
-        private Controller GetController(string controllerName, IHttpRequest request) {
+        private Controller GetController(string controllerName) {
             if (String.IsNullOrWhiteSpace(controllerName)) {
                 return null;
             }
