@@ -79,9 +79,9 @@ namespace SIS.WebServer
 
 
             if (httpRequest != null) {
-                //string sessionId = this.SetRequestSession(httpRequest);
+                string sessionId = this.SetRequestSession(httpRequest);
                 IHttpResponse httpResponse = this.router.Handle(httpRequest);
-                //this.SetResponseSession(httpResponse, sessionId);
+                this.SetResponseSession(httpResponse, sessionId);
                 await this.PrepareResponse(httpResponse);
             }
             this.client.Shutdown(SocketShutdown.Both);

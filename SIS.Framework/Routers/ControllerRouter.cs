@@ -1,4 +1,4 @@
-﻿using SIS.Framework.Services;
+using SIS.Framework.Services;
 using SIS.Framework.ActionResults.Contracts;
 using SIS.Framework.Attributes.Base;
 using SIS.Framework.Controllers.Base;
@@ -15,6 +15,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using SIS.Framework.Attributes.Action;
 
 namespace SIS.Framework.Routers
 {
@@ -57,9 +58,10 @@ namespace SIS.Framework.Routers
                 controller = this.GetController(DefaultErrorControllerName);
                 action = this.GetAction(requestMethod, controller, DefaultErrorActionName);
             }
+
+            controller.Request = request;
             object[] actionParameters = this.MapActionParameters(action, request, controller);
-            IActionResult actionResult = this.InvokeAction(controller, action, actionParameters);
-            return this.PrepareResponse(actionResult);
+            return this.Authorise(controller, action) ?? this.PrepareResponse(this.InvokeAction(controller, action, actionParameters));
         }
 
         private object[] MapActionParameters(MethodInfo action, IHttpRequest request, Controller controller) {
@@ -199,5 +201,12 @@ namespace SIS.Framework.Routers
             Controller controller = this.dependencyContainer.CreateInstance(controllerType) as Controller;
             return controller;
         }
+
+	private IHttpResponse Authorise(Controller controller, MethodInfo action) {
+		if(action.GetCustomAttributes().Where(a => a is AuthoriseAttribute).Cast<AuthoriseAttribute>().Any(a => !a.IsAuthorised(controller.Identity))) {
+			return new UnauthorisedResult();
+		}
+		return null;
+	}
     }
 }
