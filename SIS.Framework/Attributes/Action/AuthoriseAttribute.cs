@@ -14,7 +14,7 @@ namespace SIS.Framework.Attributes.Action
             this.role = role;
         }
 
-        private bool IsIdentityPresent(IIdentity identity) => identity == null;
+        private bool IsIdentityPresent(IIdentity identity) => identity != null;
 
         private bool IsIdentityInRole(IIdentity identity) {
             bool result = false;
