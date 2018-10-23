@@ -58,6 +58,8 @@ namespace SIS.Framework.Routers
                 controller = this.GetController(DefaultErrorControllerName);
                 action = this.GetAction(requestMethod, controller, DefaultErrorActionName);
             }
+
+            controller.Request = request;
             object[] actionParameters = this.MapActionParameters(action, request, controller);
             return this.Authorise(controller, action) ?? this.PrepareResponse(this.InvokeAction(controller, action, actionParameters));
         }
