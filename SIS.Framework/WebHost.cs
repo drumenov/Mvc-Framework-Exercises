@@ -23,7 +23,7 @@ namespace SIS.Framework
             IRouter router = new Router(controllerRouter, resourceRouter);
 
             MvcContext.Get.AssemblyName = Assembly
-                .GetExecutingAssembly()
+                .GetEntryAssembly()
                 .GetName()
                 .Name;
             Server server = new Server(HostingPort, router);
