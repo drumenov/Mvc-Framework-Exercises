@@ -6,7 +6,11 @@ namespace SIS.Demo.Controllers
     public class HomeController : Controller
     {
         public IActionResult Index() {
-            return this.View();
+            if (!this.Request.Session.ContainsParameter("auth")) {
+                return this.View();
+            } else {
+                return this.RedirectToAction("/users/login");
+            }
         }
     }
 }
