@@ -83,7 +83,7 @@ namespace SIS.Framework.Views
             if (viewObject != null && !viewObject.GetType().IsPrimitive && viewObject.GetType() != typeof(string)) {
                 if (File.Exists(this.FormatDisplayTemplatePath(viewObject.GetType().Name))) {
                     string renderedObject = this.RenderObject(viewObject, File.ReadAllText(this.FormatDisplayTemplatePath(viewObject.GetType().Name)));
-                    return viewObjectName != null ? template.Replace("@Model.{viewObjectName}", renderedObject) : renderedObject;
+                    return viewObjectName != null ? template.Replace($"@Model.{viewObjectName}", renderedObject) : renderedObject;
                 }
             }
 
