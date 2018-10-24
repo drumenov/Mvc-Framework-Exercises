@@ -5,6 +5,7 @@ using SIS.Demo.Services.Contracts;
 using SIS.Demo.ViewModels;
 using SIS.Framework.Security.Contracts;
 using SIS.Framework.Security;
+using SIS.Demo.Models;
 
 namespace SIS.Demo.Controllers
 {
@@ -20,23 +21,25 @@ namespace SIS.Demo.Controllers
             if (!this.Request.Session.ContainsParameter("auth")) {
                 return this.View();
             } else {
-                return this.RedirectToAction("/");
+                this.FillViewModel(nameof(this.Identity.Email), this.Identity.Email);
+                return this.View("Index");
             }
             
         }
 
         [HttpPost]
         public IActionResult Login(LoginViewModel model) {
-
-            IActionResult result = this.RedirectToAction("/users/login");
-
             if (this.ModelState.IsValid.HasValue && ModelState.IsValid.Value && usersService.ExistsByUsernameAndPassword(model.Email, model.Password)) {
                 this.FillViewModel(nameof(model.Email), model.Email);
+                User user = this.usersService.GetUserByEmail(model.Email);
                 IIdentity identity = new IdentityUser();
+                identity.Email = model.Email;
+                identity.Username = user.Username;
                 this.SignIn(identity);
-                result = this.View("IndexLoggedIn");
+                return this.View("Index");
+            } else {
+                return this.Login();
             }
-            return result;
         }
 
         public IActionResult Register() => this.View();
@@ -47,7 +50,7 @@ namespace SIS.Demo.Controllers
             if (this.ModelState.IsValid.HasValue && this.ModelState.IsValid.Value) {
                 if (this.usersService.TryRegisterUser(model)) {
                     this.FillViewModel(nameof(model.Email), model.Email);
-                    result = this.View("IndexLoggedIn");
+                    result = this.RedirectToAction("/Home/IndexLoggedIn");
                 }
             }
             return result;
@@ -59,7 +62,7 @@ namespace SIS.Demo.Controllers
         }
 
         private void FillViewModel(string key, object value) {
-            this.ViewModel[key.ToLower()] = value;
+            this.ViewModel[key] = value;
         }
     }
 }
