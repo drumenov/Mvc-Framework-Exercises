@@ -40,5 +40,9 @@ namespace SIS.Demo.Services
                 }
             }
         }
+
+        public User GetUserByEmail(string email) {
+            return this.dbContext.Users.FirstOrDefault(u => u.Email == email);
+        }
     }
 }
