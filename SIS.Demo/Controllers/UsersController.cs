@@ -3,6 +3,8 @@ using SIS.Framework.Attributes;
 using SIS.Framework.Controllers.Base;
 using SIS.Demo.Services.Contracts;
 using SIS.Demo.ViewModels;
+using SIS.Framework.Security.Contracts;
+using SIS.Framework.Security;
 
 namespace SIS.Demo.Controllers
 {
@@ -14,7 +16,14 @@ namespace SIS.Demo.Controllers
             this.usersService = usersService;
         }
 
-        public IActionResult Login() => this.View();
+        public IActionResult Login() {
+            if (!this.Request.Session.ContainsParameter("auth")) {
+                return this.View();
+            } else {
+                return this.RedirectToAction("/");
+            }
+            
+        }
 
         [HttpPost]
         public IActionResult Login(LoginViewModel model) {
@@ -23,6 +32,8 @@ namespace SIS.Demo.Controllers
 
             if (this.ModelState.IsValid.HasValue && ModelState.IsValid.Value && usersService.ExistsByUsernameAndPassword(model.Email, model.Password)) {
                 this.FillViewModel(nameof(model.Email), model.Email);
+                IIdentity identity = new IdentityUser();
+                this.SignIn(identity);
                 result = this.View("IndexLoggedIn");
             }
             return result;
@@ -43,6 +54,7 @@ namespace SIS.Demo.Controllers
         }
 
         public IActionResult Logout() {
+            this.SignOut();
             return this.RedirectToAction("/");
         }
 
