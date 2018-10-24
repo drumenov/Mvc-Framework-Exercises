@@ -13,6 +13,7 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Resources\css\" />
+    <Folder Include="Views\Albums\" />
   </ItemGroup>
 
   <ItemGroup>
