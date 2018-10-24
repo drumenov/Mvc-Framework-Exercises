@@ -9,11 +9,10 @@ namespace SIS.Framework.Views
     {
         private readonly string fullHtmlContent;
 
-	public View(string fullHtmlContent){
-		this.fullHtmlContent = fullHtmlContent;
-	}
+        public View(string fullHtmlContent) {
+            this.fullHtmlContent = fullHtmlContent;
+        }
 
-	public string Render() => this.fullHtmlContent;
-
+        public string Render() => this.fullHtmlContent;
     }
 }
