@@ -19,6 +19,7 @@ namespace SIS.Demo
         public void ConfigureServices(IDependencyContainer dependencyContainer) {
             dependencyContainer.RegisterDependency<IResourceRouter, ResourceRouter>();
             dependencyContainer.RegisterDependency<IUsersService, UsersService>();
+            dependencyContainer.RegisterDependency<IAlbumsService, AlbumsService>();
         }
     }
 }
