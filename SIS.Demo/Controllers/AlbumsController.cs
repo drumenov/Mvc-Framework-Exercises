@@ -5,6 +5,7 @@ using SIS.Framework.ActionResults.Contracts;
 using SIS.Framework.Attributes;
 using SIS.Framework.Attributes.Action;
 using SIS.Framework.Controllers.Base;
+using SIS.HTTP.Requests;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -28,6 +29,13 @@ namespace SIS.Demo.Controllers
             };
             this.ViewModel.Data["AlbumsViewModel"] = avm;
             return this.View("all-user-albums");
+        }
+
+        [HttpGet]
+        [Authorise]
+        public IActionResult Details() {
+            string albumId = this.Request.QueryData["albumId"].ToString();
+            return null; //TODO: Implement the rest of the action.
         }
     }
 }
