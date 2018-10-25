@@ -16,6 +16,10 @@ namespace SIS.Demo.Services
             this.dbContext = dbContext;
         }
 
+        public Album GetAlbumById(string id) {
+            return this.dbContext.Albums.FirstOrDefault(a => a.Id == id);
+        }
+
         public ICollection<Album> GetAllAlbums(string username) {
             ICollection<Album> allUserAlbums = this.dbContext.Users.First(u => u.Username == username).Albums.Select(ua => ua.Album).ToList<Album>();
             if(allUserAlbums.Count == 0) {
