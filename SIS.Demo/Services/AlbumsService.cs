@@ -17,9 +17,12 @@ namespace SIS.Demo.Services
         }
 
         public ICollection<Album> GetAllAlbums(string username) {
-            var tre = this.dbContext.Albums.ToArray();
-            var ert = this.dbContext.UsersAlbums.ToArray();
-            ICollection<Album> allUserAlbums = this.dbContext.Users.First(u => u.Username == username).Albums.Select(ua => ua.Album).ToList();
+            ICollection<Album> allUserAlbums = this.dbContext.Users.First(u => u.Username == username).Albums.Select(ua => ua.Album).ToList<Album>();
+            if(allUserAlbums.Count == 0) {
+                allUserAlbums.Add(new Album {
+                    Name = "There are currenly no albums." //This is neede so that if there are not albums for the current user a message indicationg that to be displayed without adding another View for handling this particular case.
+                });
+            }
             return allUserAlbums;
         }
     }
