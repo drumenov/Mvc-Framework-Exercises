@@ -1,0 +1,19 @@
+﻿<div class="col-md-6">
+    <figure>
+        <img src="@Model.ImageSource" />
+    </figure>
+    <p class="text-center text-dark">Album Name: @Model.Name</p>
+    <p class="text-center text-dark">Album Price: @Model.Price</p>
+    <div class="row">
+        <div class="col-md-3">
+            <a class='btn' href='/tracks/create?albumId={album.Id}'>Create Track</a>
+        </div>
+        <div class="col-md-3 offset-6">
+            <a class='btn' href='/albums/all'>Back To All</a>
+        </div>
+    </div>
+</div>
+<div class="col-md-6">
+    <p class="text-center text-dark">Tracks</p>
+    @Model.Collection.Tracks(@Item)
+</div>
