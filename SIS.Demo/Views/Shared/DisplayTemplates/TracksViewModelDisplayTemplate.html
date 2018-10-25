@@ -1,0 +1,16 @@
+﻿<p class="albums text-center track">
+    Track Name: @Model.Name
+</p>
+<p class="albums text-center track">
+    track Price: @Model.Price
+</p>
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 text-center">
+        <embed src="@Model.TrackSource" allowfullscreen="true" width="425" height="344">
+    </div>
+    <div class="col-md-3"></div>
+</div>
+<div class="text-center">
+    <a class="btn back" href="/albums/details?albumId=@Model.AlbumId">Back To Album</a>
+</div>
