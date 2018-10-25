@@ -20,6 +20,7 @@ namespace SIS.Demo
             dependencyContainer.RegisterDependency<IResourceRouter, ResourceRouter>();
             dependencyContainer.RegisterDependency<IUsersService, UsersService>();
             dependencyContainer.RegisterDependency<IAlbumsService, AlbumsService>();
+            dependencyContainer.RegisterDependency<ITrackService, TrackService>();
         }
     }
 }
