@@ -37,20 +37,28 @@ namespace SIS.Demo.Controllers
         public IActionResult Details() {
             string albumId = this.Request.QueryData["albumId"].ToString();
             Album album = this.albumsService.GetAlbumById(albumId);
-            if(album == null) {
+            if (album == null) {
                 this.ViewModel.Data["Error"] = "No such album"; //TODO: Check how this behavior goes.
                 return this.View();
-            } else {
+            }
+            else {
                 AlbumDetailsViewModel albumDetailsViewModel = new AlbumDetailsViewModel {
+                    Id = album.Id,
                     Name = album.Name,
                     Price = album.Price,
                     ImageSource = album.Cover,
-                    Tracks = album.Tracks.Select(at => at.Track)
+                    Tracks = album.Tracks.Select(at => new TrackViewModel {
+                        Name = at.Track.Name,
+                        AlbumId = album.Id,
+                        Id = at.TrackId,
+                        Price = at.Track.Price
+                    })
                 };
                 this.ViewModel.Data["AlbumDetailsViewModel"] = albumDetailsViewModel;
                 return this.View();
             }
-            
         }
+
     }
 }
+
