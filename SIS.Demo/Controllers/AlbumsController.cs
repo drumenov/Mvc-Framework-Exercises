@@ -45,13 +45,13 @@ namespace SIS.Demo.Controllers
                 AlbumDetailsViewModel albumDetailsViewModel = new AlbumDetailsViewModel {
                     Id = album.Id,
                     Name = album.Name,
-                    Price = album.Price,
+                    Price = Math.Round(album.Price, 2),
                     ImageSource = album.Cover,
                     Tracks = album.Tracks.Select(at => new TrackViewModel {
                         Name = at.Track.Name,
                         AlbumId = album.Id,
                         Id = at.TrackId,
-                        Price = at.Track.Price
+                        Price = Math.Round(at.Track.Price, 2)
                     })
                 };
                 this.ViewModel.Data["AlbumDetailsViewModel"] = albumDetailsViewModel;
@@ -59,6 +59,18 @@ namespace SIS.Demo.Controllers
             }
         }
 
+        public IActionResult Create() => this.View();
+
+        [HttpPost]
+        [Authorise]
+        public IActionResult Create(InputAlbumModel model) {
+            Album album = new Album {
+                Name = model.Name,
+                Cover = model.Cover,
+            };
+            this.albumsService.AddAlbumToDb(album, this.Identity.Username);
+            return this.RedirectToAction("/albums/all");
+        }
     }
 }
 
