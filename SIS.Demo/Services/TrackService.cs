@@ -19,5 +19,14 @@ namespace SIS.Demo.Services
         public Track GetTrackById(string id) {
             return this.dbContext.Tracks.FirstOrDefault(t => t.Id == id);
         }
+
+        public void AddTrackToDb(Track track, string albumId) {
+            this.dbContext.Tracks.Add(track);
+            this.dbContext.TracksAlbums.Add(new TrackAlbum {
+                TrackId = track.Id,
+                AlbumId = albumId
+            });
+            this.dbContext.SaveChanges();
+        }
     }
 }
