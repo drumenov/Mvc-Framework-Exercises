@@ -16,6 +16,15 @@ namespace SIS.Demo.Services
             this.dbContext = dbContext;
         }
 
+        public void AddAlbumToDb(Album album, string username) {
+            this.dbContext.Albums.Add(album);
+            this.dbContext.UsersAlbums.Add(new UserAlbum {
+                AlbumId = album.Id,
+                UserId = this.dbContext.Users.First(u => u.Username == username).Id
+            });
+            this.dbContext.SaveChanges();
+        }
+
         public Album GetAlbumById(string id) {
             return this.dbContext.Albums.FirstOrDefault(a => a.Id == id);
         }

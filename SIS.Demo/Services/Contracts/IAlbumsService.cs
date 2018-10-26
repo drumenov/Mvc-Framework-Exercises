@@ -10,5 +10,7 @@ namespace SIS.Demo.Services.Contracts
         ICollection<Album> GetAllAlbums(string userId);
 
         Album GetAlbumById(string id);
+
+        void AddAlbumToDb(Album album, string userId);
     }
 }
