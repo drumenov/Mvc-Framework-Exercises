@@ -38,7 +38,7 @@ namespace SIS.Demo.Controllers
             string albumId = this.Request.QueryData["albumId"].ToString();
             Album album = this.albumsService.GetAlbumById(albumId);
             if (album == null) {
-                this.ViewModel.Data["Error"] = "No such album"; //TODO: Check how this behavior goes.
+                this.ViewModel.Data["Error"] = "No such album";
                 return this.View();
             }
             else {
